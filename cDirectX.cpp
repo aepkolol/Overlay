@@ -205,6 +205,11 @@ int Render()
 						info.id = ActorID;
 						info.name = "Chest of Legends";
 						info.rareity = Fort;
+						if (name.find("DVR") != std::string::npos)
+						{
+							info.id = ActorID;
+							info.name = "Ashen Legend Chest";
+						}
 					}
 					if (name.find("StrongholdKey") != std::string::npos || name.find("StrongholdKey") != std::string::npos && name.find("Proxy") != std::string::npos)
 					{
@@ -224,24 +229,44 @@ int Render()
 						info.id = ActorID;
 						info.name = "Foul Skull";
 						info.rareity = Common;
+						if (name.find("DVR") != std::string::npos)
+						{
+							info.id = ActorID;
+							info.name = "Ashen Foul";
+						}
 					}
 					if (name.find("Rare") != std::string::npos)
 					{
 						info.id = ActorID;
 						info.name = "Disgraced Skull";
 						info.rareity = Rare;
+						if (name.find("DVR") != std::string::npos)
+						{
+							info.id = ActorID;
+							info.name = "Ashen Disgraced";
+						}
 					}
 					if (name.find("Legendary") != std::string::npos)
 					{
 						info.id = ActorID;
 						info.name = "Hateful Skull";
 						info.rareity = Legendary;
+						if (name.find("DVR") != std::string::npos)
+						{
+							info.id = ActorID;
+							info.name = "Ashen Hateful";
+						}
 					}
 					if (name.find("Mythical") != std::string::npos)
 					{
 						info.id = ActorID;
 						info.name = "Villainous Skull";
 						info.rareity = Mythical;
+						if (name.find("DVR") != std::string::npos)
+						{
+							info.id = ActorID;
+							info.name = "Ashen Villainous";
+						}
 					}
 					if (name.find("Fort") != std::string::npos)
 					{
@@ -346,15 +371,25 @@ int Render()
 
 					ActorArray.push_back(info);
 				}
-				// Wonder Secrets Box
-				else if (name.find("BP_BoxOfSecrets") != std::string::npos)
+				// Wonder Secrets Box - Not sure if this is the correct name, but its a proxy based chest
+				else if (name.find("BP_AncientChest_P") != std::string::npos || name.find("BP_BoxOfSecrets") != std::string::npos || name.find("BP_AncientChest") != std::string::npos && name.find("Proxy") != std::string::npos)
 				{
 					info.id = ActorID;
-					info.type = chest;
+					info.type = secretBox;
 					info.name = "Box Of Secrets";
 					info.Location = Actorrelativelocation;
 					info.TopLocation = Vector3(Actorrelativelocation.x, Actorrelativelocation.y, Actorrelativelocation.z + 300);
 					info.yaw = ActorYaw;
+					ActorArray.push_back(info);
+				}
+				// Active Volcano
+				else if (name.find("BP_SuperheatedWater") != std::string::npos)
+				{
+					info.type = volcano;
+					info.Location = Actorrelativelocation;
+					info.TopLocation = Vector3(Actorrelativelocation.x, Actorrelativelocation.y, Actorrelativelocation.z + 10);
+					info.id = ActorID;
+					info.name = "!ACTIVE VOLCANO!";
 					ActorArray.push_back(info);
 				}
 				// Treasure Artifacts
@@ -700,6 +735,20 @@ int Render()
 				if (ScreenPoint.y > 330)
 					ScreenPoint.y = 330;
 
+				// Volcano ESP
+				if (ActorArray.at(i).type == volcano)
+				{
+					FillRGB(ScreenPoint.x - 2, ScreenPoint.y - 2, 4, 4, 255, 125, 0, 255);
+					if (WorldToScreen(ActorArray.at(i).Location, &ScreenPoint))
+						DrawString(const_cast<char*>(ActorArray.at(i).name.c_str()), ScreenPoint.x, ScreenPoint.y, 165, 42, 42, pFontSmall);
+				}
+				// Box Of Secrets ESP
+				else if (ActorArray.at(i).type == secretBox)
+				{
+					FillRGB(ScreenPoint.x - 2, ScreenPoint.y - 2, 4, 4, 157, 0, 255, 255);
+					if (WorldToScreen(ActorArray.at(i).Location, &ScreenPoint))
+						DrawString(const_cast<char*>(ActorArray.at(i).name.c_str()), ScreenPoint.x, ScreenPoint.y, 230, 230, 250, pFontSmall);
+				}
 				// Player Ship ESP
 				if (ActorArray.at(i).type == ship)
 				{
