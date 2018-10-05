@@ -1,12 +1,11 @@
 #include "hMain.h"
 
+int Width = 0;
+int Height = 0;
 
-int Width = 1920;
-int Height = 1080;
+const MARGINS Margin = {0, 0, Width, Height};
 
-const MARGINS Margin = { 0, 0, Width, Height };
-
-char lWindowName[256] = "thiccc";
+char lWindowName[256] = "Overlay";
 HWND hWnd;
 
 char tWindowName[256] = "Sea of Thieves"; /* tWindowName ? Target Window Name */
@@ -18,7 +17,7 @@ MSG Message;
 LRESULT CALLBACK WinProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam)
 {
 	switch (Message)
-	{	
+	{
 	case WM_PAINT:
 		Render();
 		break;
@@ -28,8 +27,8 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam)
 		break;
 
 	case WM_DESTROY:
-		PostQuitMessage(1);
-		return 0;
+		exit(1);
+		break;
 
 	default:
 		return DefWindowProc(hWnd, Message, wParam, lParam);
@@ -56,7 +55,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hSecInstance, LPSTR nCmdLine, 
 	wClass.lpszMenuName = lWindowName;
 	wClass.style = CS_VREDRAW | CS_HREDRAW;
 
-	if(!RegisterClassEx(&wClass))
+	if (!RegisterClassEx(&wClass))
 		exit(1);
 
 	tWnd = FindWindow(nullptr, tWindowName);
@@ -65,22 +64,22 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hSecInstance, LPSTR nCmdLine, 
 		GetWindowRect(tWnd, &tSize);
 		Width = tSize.right - tSize.left;
 		Height = tSize.bottom - tSize.top;
-		hWnd = CreateWindowEx(WS_EX_TOPMOST | WS_EX_TRANSPARENT | WS_EX_LAYERED, lWindowName, lWindowName,  WS_POPUP, 1, 1, Width, Height, 0, 0, 0, 0);
+		hWnd = CreateWindowEx(WS_EX_TOPMOST | WS_EX_TRANSPARENT | WS_EX_LAYERED, lWindowName, lWindowName, WS_POPUP, 1, 1, Width, Height, 0, 0, 0, 0);
 		SetLayeredWindowAttributes(hWnd, 0, 1.0f, LWA_ALPHA);
 		SetLayeredWindowAttributes(hWnd, 0, RGB(0, 0, 0), LWA_COLORKEY);
-		ShowWindow( hWnd, SW_SHOW);
+		ShowWindow(hWnd, SW_SHOW);
 	}
 
 	DirectXInit(hWnd);
 
 	for (;;)
 	{
-		if(PeekMessage(&Message, hWnd, 0, 0, PM_REMOVE))
+		if (PeekMessage(&Message, hWnd, 0, 0, PM_REMOVE))
 		{
 			DispatchMessage(&Message);
 			TranslateMessage(&Message);
 		}
-		Sleep(1);
+		Sleep(20);
 	}
 	return 0;
 }
@@ -95,12 +94,10 @@ void SetWindowToTarget()
 			GetWindowRect(tWnd, &tSize);
 			Width = tSize.right - tSize.left;
 			Height = tSize.bottom - tSize.top;
-			DWORD dwStyle = GetWindowLong(tWnd, GWL_STYLE);
-			if(dwStyle & WS_BORDER)
-			{
-				tSize.top += 23;
-				Height -= 23;
-			}
+
+			tSize.top += 23;
+			Height -= 23;
+
 			MoveWindow(hWnd, tSize.left, tSize.top, Width, Height, true);
 		}
 		else

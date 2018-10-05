@@ -1,4 +1,0 @@
-radar styles
-rareity / type filtering
-rename objects
-fancy esp = boxes,distance,name

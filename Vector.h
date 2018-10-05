@@ -6,7 +6,6 @@
 #define DEG2RAD(x)((float)(x) * (float)((float)(PI) / 180.0f))
 #define RAD2DEG(x)((float)(x) * (float)(180.0f / (float)(PI)))
 
-
 class Vector2
 {
 public:
@@ -145,7 +144,6 @@ public:
 		return (x * x + y * y);
 	}
 
-
 	float DistTo(const Vector2& v) const
 	{
 		return (*this - v).Length();
@@ -210,8 +208,6 @@ public:
 		x = v.x; y = v.y; z = v.z; return *this;
 	}
 
-
-
 	Vector3& operator=(const Vector2& v)
 	{
 		x = v.x; y = v.y; z = 0.0f; return *this;
@@ -271,8 +267,6 @@ public:
 	{
 		x /= v; y /= v; z /= v; return *this;
 	}
-
-
 
 	Vector3 operator+(const Vector3& v) const
 	{
@@ -358,17 +352,11 @@ public:
 			return 0.0f;
 
 		return (x * v.x + y * v.y + z * v.z);
-
-
 	}
 
 	inline void Vector3::Rotate2D(const float &f)
 	{
-#define PI 3.14159265358979323846f
-#define DEG2RAD(x)((float)(x) * (float)((float)(PI) / 180.0f))
-
 		float _x, _y;
-
 		float s, c;
 
 		s = sin(DEG2RAD(f));
@@ -392,8 +380,6 @@ public:
 			y > -0.01f && y < 0.01f &&
 			z > -0.01f && z < 0.01f);
 	}
-
-
 
 public:
 	float x, y, z;

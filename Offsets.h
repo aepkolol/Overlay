@@ -1,41 +1,46 @@
 #pragma once
-
 class Offsets
 {
 public:
 	// :APlayerController:PlayerCameraManager:SoT_Engine_classes.hpp
 	static constexpr int PlayerCameraManager = 0x0520;
-			
+
+	// APlayerCameraManager:DefaultFOV:SoT_Engine_classes.hpp
+	static constexpr int DefaultFOV = 0x04A8;
+
 	// :AAthenaCharacter:WieldedItemComponent:SoT_Athena_classes.hpp
 	static constexpr int WieldedItemComponent = 0x0830;
+
 	// :AAthenaCharacter:HealthComponent:SoT_Athena_classes.hpp
 	static constexpr int HealthComponent = 0x0858;
-		
+
 	// :UWieldedItemComponent:CurrentlyWieldedItem:SoT_Athena_classes.hpp
 	static constexpr int CurrentlyWieldedItem = 0x02B8;
 
 	// :AWieldableItem:ItemName:SoT_Athena_classes.hpp
 	static constexpr int WieldableItemName = 0x0588; // ItemName property
-		
+
 	// :APlayerCameraManager:CameraCache:SoT_Engine_classes.hpp
 	static constexpr int CameraCache = 0x0500;
+
 	// :FCameraCacheEntry:POV:SoT_Engine_structs.hpp
 	static constexpr int CameraCachePOV = CameraCache + 0x0010;
 	static constexpr int CameraLocation = CameraCachePOV + 0x0;
 	static constexpr int CameraRotation = CameraCachePOV + 0xC;
-	static constexpr int CameraFOV = CameraCachePOV + 0x18;
-	
+
 	// :UIslandDataAsset:IslandDataEntries:SoT_Athena_classes.hpp
 	static constexpr int IslandDataEntries = 0x0040;
-	static constexpr int IslandDataEntriesCount  = IslandDataEntries + 0x8;
+	static constexpr int IslandDataEntriesCount = IslandDataEntries + 0x8;
 
 	// :UIslandDataAssetEntry:IslandName:SoT_Athena_classes.hpp
 	static constexpr int IslandName = 0x0028;
+
 	// :UIslandDataAssetEntry:TreasureMaps:SoT_Athena_classes.hpp
 	static constexpr int TreasureMaps = 0x0030;
 
 	// :AXMarksTheSpotMap:MapTexturePath:SoT_Athena_classes.hpp
 	static constexpr int MapTexturePath = 0x0890;
+
 	// :AXMarksTheSpotMap:Marks:SoT_Athena_classes.hpp
 	static constexpr int Marks = 0x08D0;
 	static constexpr int MarksCount = Marks + 0x8;
@@ -54,10 +59,11 @@ public:
 
 	// :APlayerState:PlayerId:SoT_Engine_classes.hpp
 	static constexpr int PlayerId = 0x04B8;
+
 	// :APlayerState:PlayerName:SoT_Engine_classes.hpp
 	static constexpr int PlayerName = 0x0498;
 
-#pragma region Almsonst never changing offsets
+#pragma region Almost never changing offsets
 	// UObject
 	static constexpr int Id = 0x18;
 
@@ -65,12 +71,13 @@ public:
 	static constexpr int PersistentLevel = 0x0030; // ULevel
 	static constexpr int ActorsTArray = 0xA0; // Uknown offsets
 	static constexpr int ActorsTArrayCount = ActorsTArray + 0x8;
+
 	// :UWorld:OwningGameInstance:SoT_Engine_classes.hpp
 	static constexpr int OwningGameInstance = 0x01C0;
 
 	// UGameInstance
 	static constexpr int LocalPlayers = 0x38;
-	
+
 	// UHealthComponent
 	static constexpr int CurrentHealth = 0xDC;
 	static constexpr int MaxHealth = 0xD0;
@@ -88,4 +95,3 @@ public:
 	static constexpr int TreasureLocationsCount = TreasureLocations + 0x8;
 #pragma endregion
 };
-

@@ -3,10 +3,8 @@
 
 #include "hMain.h"
 #include "hDrawings.h"
-
 #include <Windows.h>
 #include <iostream>
-
 #include <d3d9.h>
 #include <d3dx9.h>
 #pragma comment(lib, "d3d9.lib")
@@ -23,5 +21,4 @@ extern ID3DXFont* pFontSmall;
 
 int DirectXInit(HWND hWnd);
 int Render();
-
 #endif
