@@ -26,7 +26,7 @@ namespace IgroWidgets
 					outOffset = (offset - maskLength);
 					return true;
 				}
-				if(tmpOffset == -1)
+				if (tmpOffset == -1)
 				{
 					tmpOffset = offset;
 				}

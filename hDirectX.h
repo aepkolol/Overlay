@@ -1,16 +1,16 @@
 #ifndef HDIRECTX_H
 #define HDIRECTX_H
 
-#include "hMain.h"
 #include "hDrawings.h"
-#include <Windows.h>
+#include "hMain.h"
 #include <iostream>
+#include <windows.h>
+
 #include <d3d9.h>
 #include <d3dx9.h>
+#include <dwmapi.h>
 #pragma comment(lib, "d3d9.lib")
 #pragma comment(lib, "d3dx9.lib")
-
-#include <dwmapi.h>
 #pragma comment(lib, "dwmapi.lib")
 
 extern IDirect3D9Ex* p_Object;

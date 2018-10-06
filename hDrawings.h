@@ -1,14 +1,11 @@
 #ifndef HDRAWFUNC_H
 #define HDRAWFUNC_H
 
-#include "hDirectX.h"
-#pragma warning(disable : 4244) //remove the incoming warns
-#pragma warning(disable : 4996) //remove the incoming warns
+#pragma warning(disable : 4244)
+#pragma warning(disable : 4996)
 
+#include "hDirectX.h"
 #include <d3dx9.h>
-#include <d3d9.h>
-#pragma comment(lib, "d3d9.lib")
-#pragma comment(lib, "d3dx9.lib")
 
 void GradientFunc(int x, int y, int w, int h,int r, int g, int b, int a);
 void DrawCenterLine(float x, float y, int r, int g, int b, int a);

@@ -4,16 +4,16 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <iostream>
-#include <TlHelp32.h>
 #include <string>
 #include <sstream>
+#include <tlhelp32.h>
 
 class ProcMem {
 protected:
 
 public:
-	uintptr_t *base; //Stores Module Base Address
-	uintptr_t Proc_ID; //Varible to store Process ID
+	uintptr_t *base; // stores module base address
+	uintptr_t Proc_ID; // variable to store process id
 	HANDLE hProcess;
 	DWORD dwPID;
 	DWORD dwProtection;
@@ -24,10 +24,10 @@ public:
 	ProcMem();
 	~ProcMem();
 	int chSizeOfArray(char *chArray);
-	int iSizeOfArray(int *iArray);
+	int iSizeOfArray(char *iArray);
 	bool iFind(int *iAry, int iVal);
 
-#pragma region TEMPLATE MEMORY FUNCTIONS
+#pragma region template memory functions
 	template <class cData>
 	cData Read(uintptr_t dwAddress)
 	{
@@ -68,7 +68,7 @@ public:
 	virtual uintptr_t AOB_Scan(uintptr_t dwAddress, uintptr_t dwEnd, char *chPattern);
 	virtual uintptr_t Module(LPSTR ModuleName);
 
-	// Write memory
+	// write memory
 	template <class cData>
 
 	cData Write(uintptr_t(Address), cData B) {
@@ -78,13 +78,13 @@ public:
 				return B;
 			}
 			else {
-				throw 1; // Throw Error Number / Defined In Catch
+				throw 1; // throw error number / defined in catch
 			}
-		} // Try End
+		} // try end
 		catch (int error) {
-		} // Catch End
+		} // catch end
 		return 0;
-	} // Write End
+	} // write end
 #pragma endregion
 };
 #endif

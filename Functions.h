@@ -18,10 +18,6 @@ struct Color
 	int r, g, b;
 };
 
-/*#define WORLD_OFFSET 0x51b5578
-#define OBJECTS_OFFSET 0x50f3680
-#define NAME_OFFSET 0x50f7e40*/
-
 ULONG_PTR GNames;
 ProcMem mem;
 DWORD pid;
@@ -30,6 +26,7 @@ bool FirstRun = true;
 uintptr_t WorldAddress;
 uintptr_t ObjectsAddress;
 uintptr_t NamesAddress;
+char SoTGame[256] = "SoTGame.exe";
 
 Vector3 myLocation, myAngles, Cameralocation;
 float CameraFov;
@@ -38,10 +35,10 @@ void ReadData()
 {
 	if (FirstRun)
 	{
-		mem.Process("SoTGame.exe");
+		mem.Process(SoTGame);
 
 		/* Set Module and store it in Client */
-		BASE = mem.Module("SoTGame.exe");
+		BASE = mem.Module(SoTGame);
 		FirstRun = false;
 
 		auto address = IgroWidgets::FindPatternExternal(mem.hProcess, reinterpret_cast<HMODULE>(BASE),
@@ -61,8 +58,6 @@ void ReadData()
 		{
 			NamesAddress = IgroWidgets::ReadRIPAddress(mem.hProcess, address, 3, 7);
 		}
-
-		//WaitForMultipleObjects(sizeof(rghThreads) / sizeof(HANDLE), rghThreads, TRU E, INFINITE);
 	}
 }
 
@@ -175,11 +170,6 @@ vMatrix Matrix(Vector3 rot, Vector3 origin)
 	matrix[2][1] = CY * SR - CR * SP * SY;
 	matrix[2][2] = CR * CP;
 	matrix[2][3] = 0.f;
-
-	//matrix[3][0] = origin.x;
-	//matrix[3][1] = origin.y;
-	//matrix[3][2] = origin.z;
-	//matrix[3][3] = 1.f;
 
 	return matrix;
 }
@@ -342,14 +332,14 @@ bool get_IslandDataEntries_list(DWORD_PTR IslandDataAsset_PTR, DWORD_PTR * list,
 		return true;
 	}
 	catch (...) {
-		*list = NULL;
+		*list = 0;
 		*count = 0;
 		return false;
 	}
 }
 
 bool find_Island_In_IslandDataEntries(std::string MapTexturePath, DWORD_PTR * TreasureLocations_PTR, __int32 * TreasureLocations_Count) {
-	DWORD_PTR list = NULL;
+	DWORD_PTR list = 0;
 	__int32 count = 0;
 	if (get_IslandDataEntries_list(IslandDataAsset_PTR, &list, &count)) {
 		for (auto nIndex = 0; nIndex <= count; nIndex++) {
@@ -382,8 +372,6 @@ bool get_TreasureMap(DWORD_PTR _PTR, std::string * MapTexturePath, std::vector<V
 
 		using convert_type = std::codecvt_utf8<wchar_t>;
 		std::wstring_convert<convert_type, wchar_t> converter;
-
-		//use converter (.to_bytes: wstr->str, .from_bytes: str->wstr)
 		std::string converted_str = converter.to_bytes(test);
 
 		*MapTexturePath = converted_str;

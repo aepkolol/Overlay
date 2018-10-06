@@ -63,7 +63,7 @@ public:
 	// :APlayerState:PlayerName:SoT_Engine_classes.hpp
 	static constexpr int PlayerName = 0x0498;
 
-#pragma region Almost never changing offsets
+#pragma region almost never changing offsets
 	// UObject
 	static constexpr int Id = 0x18;
 

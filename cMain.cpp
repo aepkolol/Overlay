@@ -1,8 +1,7 @@
 #include "hMain.h"
 
-int Width = 0;
-int Height = 0;
-
+int Width = 800;
+int Height = 600;
 const MARGINS Margin = {0, 0, Width, Height};
 
 char lWindowName[256] = "Overlay";
@@ -11,7 +10,6 @@ HWND hWnd;
 char tWindowName[256] = "Sea of Thieves"; /* tWindowName ? Target Window Name */
 HWND tWnd;
 RECT tSize;
-
 MSG Message;
 
 LRESULT CALLBACK WinProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam)
@@ -42,9 +40,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hSecInstance, LPSTR nCmdLine, 
 	CreateThread(0, 0, reinterpret_cast<LPTHREAD_START_ROUTINE>(SetWindowToTarget), nullptr, 0, nullptr);
 
 	WNDCLASSEX wClass;
-	wClass.cbClsExtra = NULL;
+	wClass.cbClsExtra = 0;
 	wClass.cbSize = sizeof(WNDCLASSEX);
-	wClass.cbWndExtra = NULL;
+	wClass.cbWndExtra = 0;
 	wClass.hbrBackground = static_cast<HBRUSH>(CreateSolidBrush(RGB(0, 0, 0)));
 	wClass.hCursor = LoadCursor(nullptr, IDC_ARROW);
 	wClass.hIcon = LoadIcon(nullptr, IDI_APPLICATION);

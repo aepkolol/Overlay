@@ -2,15 +2,10 @@
 #define HMAIN_H
 
 #include "hDirectX.h"
-#include <Windows.h>
-#include <iostream>
-#include <d3d9.h>
 #include <d3dx9.h>
-#pragma comment(lib, "d3d9.lib")
-#pragma comment(lib, "d3dx9.lib")
-
 #include <dwmapi.h>
-#pragma comment(lib, "dwmapi.lib")
+#include <iostream>
+#include <windows.h>
 
 extern int Width;
 extern int Height;
