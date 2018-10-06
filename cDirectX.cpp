@@ -9,6 +9,9 @@ ID3DXLine* p_Line;
 ID3DXFont* pFontSmall = 0;
 
 bool btDebug;
+bool hoarders;
+bool merchants;
+bool orderSouls;
 
 int DirectXInit(HWND hWnd)
 {
@@ -137,7 +140,11 @@ int Render()
 					info.maxhealth = Actormaxhealth;
 					ActorArray.push_back(info);
 				}
-				else if (name.find("BP_TreasureChest_P") != std::string::npos || name.find("BP_TreasureChest") != std::string::npos && name.find("Proxy") || name.find("BP_ShipwreckTreasureChest_P") != std::string::npos || name.find("BP_ShipwreckTreasureChest") != std::string::npos && name.find("Proxy") || name.find("StrongholdKey") != std::string::npos)
+
+				// --- ITEM FINDING ---
+
+				// Chests
+				else if ((hoarders) && ((name.find("BP_TreasureChest_P") != std::string::npos) || (name.find("BP_TreasureChest") != std::string::npos && name.find("Proxy")) || (name.find("BP_ShipwreckTreasureChest_P") != std::string::npos) || (name.find("BP_ShipwreckTreasureChest") != std::string::npos && name.find("Proxy")) || (name.find("StrongholdKey") != std::string::npos)))
 				{
 					info.type = chest;
 					info.Location = Actorrelativelocation;
@@ -223,7 +230,9 @@ int Render()
 					}
 					ActorArray.push_back(info);
 				}
-				else if (name.find("BP_BountyRewardSkull_P") != std::string::npos || name.find("BP_BountyRewardSkull") != std::string::npos && name.find("Proxy") != std::string::npos)
+
+				// Skulls
+				else if ((orderSouls) && (name.find("BP_BountyRewardSkull_P") != std::string::npos) || (name.find("BP_BountyRewardSkull") != std::string::npos) && (name.find("Proxy") != std::string::npos))
 				{
 					info.type = skull;
 					info.Location = Actorrelativelocation;
@@ -280,7 +289,9 @@ int Render()
 					}
 					ActorArray.push_back(info);
 				}
-				else if (name.find("BP_MerchantCrate") != std::string::npos && name.find("Proxy") != std::string::npos)
+
+				// Merchant Crates
+				else if ((merchants) && (name.find("BP_MerchantCrate") != std::string::npos) && (name.find("Proxy") != std::string::npos))
 				{
 					info.Location = Actorrelativelocation;
 					info.TopLocation = Vector3(Actorrelativelocation.x, Actorrelativelocation.y, Actorrelativelocation.z + 10);
@@ -386,7 +397,7 @@ int Render()
 					info.yaw = ActorYaw;
 					ActorArray.push_back(info);
 				}
-				// Active Volcano
+				// Active Volcano - NOT WORKING
 				else if (name.find("BP_SuperheatedWater") != std::string::npos)
 				{
 					info.type = volcano;
@@ -397,7 +408,7 @@ int Render()
 					ActorArray.push_back(info);
 				}
 				// Treasure Artifacts
-				else if (name.find("BP_TreasureArtifact") != std::string::npos || name.find("BP_Treasure_Artifact") != std::string::npos && name.find("Proxy") != std::string::npos || name.find("BP_TreasureArtifact_Wieldable") != std::string::npos)
+				else if ((hoarders) && (name.find("BP_TreasureArtifact") != std::string::npos) || (name.find("BP_Treasure_Artifact") != std::string::npos) && (name.find("Proxy") != std::string::npos) || (name.find("BP_TreasureArtifact_Wieldable") != std::string::npos))
 				{
 					info.type = artifact;
 					info.Location = Actorrelativelocation;
@@ -484,7 +495,7 @@ int Render()
 
 					ActorArray.push_back(info);
 				}
-				else if (name.find("BP_Chicken_") != std::string::npos)
+				else if ((merchants) && (name.find("BP_Chicken_") != std::string::npos))
 				{
 					info.type = chicken;
 					info.Location = Actorrelativelocation;
@@ -517,7 +528,7 @@ int Render()
 					ActorArray.push_back(info);
 				}
 				// Pigs
-				else if (name.find("BP_Pig_") != std::string::npos)
+				else if ((merchants) && (name.find("BP_Pig_") != std::string::npos))
 				{
 					info.type = pig;
 					info.Location = Actorrelativelocation;
@@ -550,7 +561,7 @@ int Render()
 					ActorArray.push_back(info);
 				}
 				// Snakes
-				else if (name.find("BP_Snake_") != std::string::npos)
+				else if ((merchants) && (name.find("BP_Snake_") != std::string::npos))
 				{
 					info.type = snake;
 					info.Location = Actorrelativelocation;
@@ -582,6 +593,8 @@ int Render()
 
 					ActorArray.push_back(info);
 				}
+
+				// Ships
 				else if (name.find("BP_SmallShipNetProxy") != std::string::npos || name.find("BP_MediumShipNetProxy") != std::string::npos || name.find("BP_LargeShipNetProxy") != std::string::npos)
 				{
 					info.id = ActorID;
@@ -638,6 +651,7 @@ int Render()
 
 					ActorArray.push_back(info);
 				}
+				// Sunken Artefact - Not used anymore?
 				else if (name.find("BP_SunkenCurseArtefact_") != std::string::npos)
 				{
 					info.id = ActorID;
@@ -751,6 +765,8 @@ int Render()
 				}
 			}
 
+
+			// Xmarks items - NOT WORKING 
 			XMarksTheSpot = new_XMarksTheSpot;
 			myLocation = mem.Read<Vector3>(RootComponent + Offsets::RelativeLocation);
 			myAngles = mem.Read<Vector3>(CameraManager + Offsets::CameraRotation);
@@ -759,6 +775,8 @@ int Render()
 			//auto myhealth = mem.Read<float>(HealthComponet + Offsets::CurrentHealth);
 			//auto maxhealth = mem.Read<float>(HealthComponet + Offsets::MaxHealth);
 			Sleep(20);
+
+			// --- ESP DRAWING ---
 
 			// "XMarksTheSpot"
 			for (int i = 0; i < XMarksTheSpot.size(); i++)
@@ -797,37 +815,37 @@ int Render()
 					ScreenPoint.y = 330;
 
 				// Volcano ESP
-				if (ActorArray.at(i).type == volcano)
+				else if (ActorArray.at(i).type == volcano)
 				{
-					FillRGB(ScreenPoint.x - 2, ScreenPoint.y - 2, 4, 4, 255, 125, 0, 255);
+					FillRGB(ScreenPoint.x - 2, ScreenPoint.y - 2, 4, 4, 255, 125, 0, 255); //ORANGE
 					if (WorldToScreen(ActorArray.at(i).Location, &ScreenPoint))
 						DrawString(const_cast<char*>(ActorArray.at(i).name.c_str()), ScreenPoint.x, ScreenPoint.y, 165, 42, 42, pFontSmall);
 				}
 				// Box Of Secrets ESP
-				else if (ActorArray.at(i).type == secretBox)
+				else if (ActorArray.at(i).type == secretBox) 
 				{
-					FillRGB(ScreenPoint.x - 2, ScreenPoint.y - 2, 4, 4, 157, 0, 255, 255);
+					FillRGB(ScreenPoint.x - 2, ScreenPoint.y - 2, 4, 4, 157, 0, 255, 255); // PURPLE
 					if (WorldToScreen(ActorArray.at(i).Location, &ScreenPoint))
 						DrawString(const_cast<char*>(ActorArray.at(i).name.c_str()), ScreenPoint.x, ScreenPoint.y, 230, 230, 250, pFontSmall);
 				}
 				// Player Ship ESP
-				if (ActorArray.at(i).type == ship)
+				else if (ActorArray.at(i).type == ship)
 				{
-					FillRGB(ScreenPoint.x - 5, ScreenPoint.y - 5, 10, 10, 0, 255, 0, 255);
+					FillRGB(ScreenPoint.x - 5, ScreenPoint.y - 5, 10, 10, 0, 255, 0, 255); // LIME GREEN
 					if (WorldToScreen(ActorArray.at(i).Location, &ScreenPoint))
 						DrawString((char*)ActorArray.at(i).name.c_str(), ScreenPoint.x, ScreenPoint.y, 0, 255, 0, pFontSmall);
 				}
 				// Ghost Ship ESP
 				else if (ActorArray.at(i).type == ghostship)
 				{
-					FillRGB(ScreenPoint.x - 5, ScreenPoint.y - 5, 10, 10, 125, 255, 0, 255);
+					FillRGB(ScreenPoint.x - 5, ScreenPoint.y - 5, 10, 10, 125, 255, 0, 255); // YELLOW-GREEN
 					if (WorldToScreen(ActorArray.at(i).Location, &ScreenPoint))
 						DrawString((char*)ActorArray.at(i).name.c_str(), ScreenPoint.x, ScreenPoint.y, 0, 255, 100, pFontSmall);
 				}
 				// Player ESP
 				else if (ActorArray.at(i).type == player)
 				{
-						FillRGB(ScreenPoint.x - 3, ScreenPoint.y - 3, 6, 6, 0, 0, 255, 255);
+						FillRGB(ScreenPoint.x - 3, ScreenPoint.y - 3, 6, 6, 0, 0, 255, 255); // BLUE
 						Vector2 headpoint;
 
 						if (WorldToScreen(ActorArray.at(i).TopLocation, &headpoint) && WorldToScreen(ActorArray.at(i).Location, &ScreenPoint))
@@ -857,28 +875,28 @@ int Render()
 				// Animal Crate ESP
 				else if (ActorArray.at(i).type == animalcrate)
 				{
-					FillRGB(ScreenPoint.x - 2, ScreenPoint.y - 2, 4, 4, 230, 230, 250, 255);
+					FillRGB(ScreenPoint.x - 2, ScreenPoint.y - 2, 4, 4, 230, 230, 250, 255); // LIGHT PURPLE
 					if (WorldToScreen(ActorArray.at(i).Location, &ScreenPoint))
 						DrawString(const_cast<char*>(ActorArray.at(i).name.c_str()), ScreenPoint.x, ScreenPoint.y, 230, 230, 250, pFontSmall);
 				}
 				// Gunpowder ESP
 				else if (ActorArray.at(i).type == gunpowder)
 				{
-					FillRGB(ScreenPoint.x - 2, ScreenPoint.y - 2, 4, 4, 255, 0, 0, 255);
+					FillRGB(ScreenPoint.x - 2, ScreenPoint.y - 2, 4, 4, 255, 0, 0, 255); // RED
 					if (WorldToScreen(ActorArray.at(i).Location, &ScreenPoint))
 						DrawString(const_cast<char*>(ActorArray.at(i).name.c_str()), ScreenPoint.x, ScreenPoint.y, 255, 0, 0, pFontSmall);
 				}
 				// Merchant Crate ESP
 				else if (ActorArray.at(i).type == merchantcrate)
 				{
-					FillRGB(ScreenPoint.x - 2, ScreenPoint.y - 2, 4, 4, 255, 165, 0, 255);
+					FillRGB(ScreenPoint.x - 2, ScreenPoint.y - 2, 4, 4, 255, 165, 0, 255); // ORANGE
 					if (WorldToScreen(ActorArray.at(i).Location, &ScreenPoint))
 						DrawString(const_cast<char*>(ActorArray.at(i).name.c_str()), ScreenPoint.x, ScreenPoint.y, 255, 165, 0, pFontSmall);
 				}
 				// Skeleton ESP
 				else if (ActorArray.at(i).type == skeleton)
 				{
-					FillRGB(ScreenPoint.x - 2, ScreenPoint.y - 2, 4, 4, 255, 0, 0, 255);
+					FillRGB(ScreenPoint.x - 2, ScreenPoint.y - 2, 4, 4, 255, 0, 0, 255); // RED
 					Vector2 headpoint;
 
 					if (WorldToScreen(ActorArray.at(i).TopLocation, &headpoint) && WorldToScreen(ActorArray.at(i).Location, &ScreenPoint))
@@ -887,13 +905,13 @@ int Render()
 						hi = (ScreenPoint.y - headpoint.y) * 2;
 						wi = hi * 0.65;
 
-						DrawBox(headpoint.x - wi / 2, headpoint.y, wi, hi, 1, 255, 0, 0, 255);
+						DrawBox(headpoint.x - wi / 2, headpoint.y, wi, hi, 1, 255, 0, 0, 255); // RED
 					}
 				}
 				// Skeleton Ship Captain ESP
 				else if (ActorArray.at(i).type == ghostcaptain)
 				{
-					FillRGB(ScreenPoint.x - 2, ScreenPoint.y - 2, 4, 4, 255, 0, 0, 255);
+					FillRGB(ScreenPoint.x - 2, ScreenPoint.y - 2, 4, 4, 255, 0, 0, 255); // RED
 					Vector2 headpoint;
 					if (WorldToScreen(ActorArray.at(i).TopLocation, &headpoint) && WorldToScreen(ActorArray.at(i).Location, &ScreenPoint))
 					{
@@ -907,32 +925,32 @@ int Render()
 				// Rareity ESP
 				else if (ActorArray.at(i).rareity == Common)
 				{
-					FillRGB(ScreenPoint.x - 2, ScreenPoint.y - 2, 4, 4, 165, 42, 42, 255);
+					FillRGB(ScreenPoint.x - 2, ScreenPoint.y - 2, 4, 4, 165, 42, 42, 255); // MARROON? Idk my colors, a blood red almost? 
 					if (WorldToScreen(ActorArray.at(i).Location, &ScreenPoint))
 						DrawString(const_cast<char*>(ActorArray.at(i).name.c_str()), ScreenPoint.x, ScreenPoint.y, 165, 42, 42, pFontSmall);
 				}
 				else if (ActorArray.at(i).rareity == Rare)
 				{
-					FillRGB(ScreenPoint.x - 2, ScreenPoint.y - 2, 4, 4, 0, 255, 255, 255);
+					FillRGB(ScreenPoint.x - 2, ScreenPoint.y - 2, 4, 4, 0, 255, 255, 255); // LIGHT BLUE
 					if (WorldToScreen(ActorArray.at(i).Location, &ScreenPoint))
 						DrawString(const_cast<char*>(ActorArray.at(i).name.c_str()), ScreenPoint.x, ScreenPoint.y, 0, 255, 255, pFontSmall);
 				}
 				else if (ActorArray.at(i).rareity == Legendary)
 				{
-					FillRGB(ScreenPoint.x - 2, ScreenPoint.y - 2, 4, 4, 255, 105, 180, 255);
+					FillRGB(ScreenPoint.x - 2, ScreenPoint.y - 2, 4, 4, 255, 105, 180, 255); // PINK
 					if (WorldToScreen(ActorArray.at(i).Location, &ScreenPoint))
 						DrawString(const_cast<char*>(ActorArray.at(i).name.c_str()), ScreenPoint.x, ScreenPoint.y, 255, 105, 180, pFontSmall);
 				}
 				else if (ActorArray.at(i).rareity == Mythical)
 				{
-					FillRGB(ScreenPoint.x - 2, ScreenPoint.y - 2, 4, 4, 75, 0, 130, 255);
+					FillRGB(ScreenPoint.x - 2, ScreenPoint.y - 2, 4, 4, 75, 0, 130, 255); // PURPLE
 					if (WorldToScreen(ActorArray.at(i).Location, &ScreenPoint))
 						DrawString(const_cast<char*>(ActorArray.at(i).name.c_str()), ScreenPoint.x, ScreenPoint.y, 75, 0, 130, pFontSmall);
 				}
 				// All Other ESP
 				else
 				{
-					FillRGB(ScreenPoint.x - 2, ScreenPoint.y - 2, 4, 4, 255, 215, 0, 255);
+					FillRGB(ScreenPoint.x - 2, ScreenPoint.y - 2, 4, 4, 255, 215, 0, 255); // YELLOW
 					if (WorldToScreen(ActorArray.at(i).Location, &ScreenPoint))
 						DrawString(const_cast<char*>(ActorArray.at(i).name.c_str()), ScreenPoint.x, ScreenPoint.y, 255, 215, 05, pFontSmall);
 				}
@@ -941,18 +959,36 @@ int Render()
 			}
 	}
 
-	// F9 - Exit ESP
-	if (GetAsyncKeyState(VK_F9) & 1)
+	// ESP Button Control
+	if (GetAsyncKeyState(VK_F9) & 1) // Exit ESP
 	{
 		exit(1);
 	}
-	else if (GetAsyncKeyState(VK_F8) & 1)
+	else if (GetAsyncKeyState(VK_F8) & 1) // Debug Items
 	{
 		btDebug = false;
 	}
-	else if (GetAsyncKeyState(VK_F7) & 1)
+	else if (GetAsyncKeyState(VK_F7) & 1) // Debug Items Off
 	{
 		btDebug = true;
+	}
+	else if (GetAsyncKeyState(VK_F6) & 1) // Hoarders Items On
+	{
+		hoarders = true;
+	}
+	else if (GetAsyncKeyState(VK_F5) & 1) // Order Of Souls Items On
+	{
+		orderSouls = true;
+	}
+	else if (GetAsyncKeyState(VK_F4) & 1) // Order Of Souls Items On
+	{
+		merchants = true;
+	}
+	else if (GetAsyncKeyState(VK_F3) & 1) // All Rep Items Off
+	{
+		orderSouls = false;
+		merchants = false;
+		hoarders = false;
 	}
 
 	p_Device->EndScene();
