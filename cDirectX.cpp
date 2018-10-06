@@ -8,6 +8,8 @@ D3DPRESENT_PARAMETERS p_Params;
 ID3DXLine* p_Line;
 ID3DXFont* pFontSmall = 0;
 
+bool btDebug;
+
 int DirectXInit(HWND hWnd)
 {
 	if (FAILED(Direct3DCreate9Ex(D3D_SDK_VERSION, &p_Object)))
@@ -78,8 +80,10 @@ int Render()
 			{
 				ULONG_PTR ActorList = mem.Read<ULONG_PTR>(ULevel + Offsets::ActorsTArray);
 				ULONG_PTR Actor = mem.Read<ULONG_PTR>(ActorList + (i * 0x8));
+
 				if (!Actor)
 					continue;
+
 				int ActorID = mem.Read<int>(Actor + Offsets::Id);
 				auto ActorRootComponet = mem.Read<ULONG_PTR>(Actor + Offsets::RootComponent);
 				auto Actorrelativelocation = mem.Read<Vector3>(ActorRootComponet + Offsets::RelativeLocation); // owninggameinstance.LocalPlayersPTR->LocalPlayers->PlayerController->PlayerState->RootComponent->RelativeLocation_0;
@@ -627,7 +631,7 @@ int Render()
 				else if (name.find("BP_Shipwreck_01_a_NetProxy_C") != std::string::npos || name.find("BP_Shipwreck_") != std::string::npos || name.find("BP_Shipwreck") != std::string::npos && name.find("Proxy") != std::string::npos)
 				{
 					info.id = ActorID;
-					info.name = "SHIPWRECK";
+					info.name = "Shipwreck";
 					info.type = animalcrate;
 					info.Location = Actorrelativelocation;
 					info.TopLocation = Vector3(Actorrelativelocation.x, Actorrelativelocation.y, Actorrelativelocation.z + 75);
@@ -652,6 +656,63 @@ int Render()
 					info.type = animalcrate;
 					info.Location = Actorrelativelocation;
 					info.TopLocation = Vector3(Actorrelativelocation.x, Actorrelativelocation.y, Actorrelativelocation.z + 75);
+
+					ActorArray.push_back(info);
+				}
+				// SkellyShip Cloud
+				else if (name.find("BP_SkellyShip") != std::string::npos)
+				{
+					info.id = ActorID;
+					info.type = fort;
+					info.name = "SkellyShip Cloud";
+					info.Location = Actorrelativelocation;
+					info.TopLocation = Vector3(Actorrelativelocation.x, Actorrelativelocation.y, Actorrelativelocation.z + 10);
+
+					ActorArray.push_back(info);
+				}
+				// Shark
+				else if (name.find("BP_Shark") != std::string::npos)
+				{
+					info.id = ActorID;
+					info.type = shark;
+					info.name = "Shark";
+					info.Location = Actorrelativelocation;
+					info.TopLocation = Vector3(Actorrelativelocation.x, Actorrelativelocation.y, Actorrelativelocation.z + 10);
+
+					ActorArray.push_back(info);
+				}
+				// Mermaid
+				else if (name.find("BP_Mermaid") != std::string::npos)
+				{
+					info.id = ActorID;
+					info.type = mermaid;
+					info.name = "Mermaid";
+					info.Location = Actorrelativelocation;
+					info.TopLocation = Vector3(Actorrelativelocation.x, Actorrelativelocation.y, Actorrelativelocation.z + 10);
+
+					ActorArray.push_back(info);
+				}
+				// Barrel Seagulls
+				else if (name.find("BP_Seagulls_Barrels") != std::string::npos)
+				{
+					info.id = ActorID;
+					info.type = barrels;
+					info.name = "Barrel Seagulls";
+					info.Location = Actorrelativelocation;
+					info.TopLocation = Vector3(Actorrelativelocation.x, Actorrelativelocation.y, Actorrelativelocation.z + 10);
+
+					ActorArray.push_back(info);
+				}
+				// Hide unwanted items
+				else if ((btDebug) && ((name.find("BP_AthenaPlayerCameraManager") != std::string::npos) || (name.find("BP_Buoyant") != std::string::npos) || (name.find("BP_OnlineAthenaPlayerController") != std::string::npos)))
+				{}
+				// Debug
+				else if (btDebug)
+				{
+					info.id = ActorID;
+					info.name = name;
+					info.Location = Actorrelativelocation;
+					info.TopLocation = Vector3(Actorrelativelocation.x, Actorrelativelocation.y, Actorrelativelocation.z + 10);
 
 					ActorArray.push_back(info);
 				}
@@ -882,7 +943,17 @@ int Render()
 
 	// F9 - Exit ESP
 	if (GetAsyncKeyState(VK_F9) & 1)
-	{ exit(1); }
+	{
+		exit(1);
+	}
+	else if (GetAsyncKeyState(VK_F8) & 1)
+	{
+		btDebug = false;
+	}
+	else if (GetAsyncKeyState(VK_F7) & 1)
+	{
+		btDebug = true;
+	}
 
 	p_Device->EndScene();
 	p_Device->PresentEx(0, 0, 0, 0, 0);

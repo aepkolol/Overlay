@@ -102,7 +102,10 @@ enum type
 	ghostship,
 	ghostcaptain,
 	volcano,
-	secretBox
+	secretBox,
+	barrels,
+	shark,
+	mermaid
 };
 
 struct AActors
