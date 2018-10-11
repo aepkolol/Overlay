@@ -123,7 +123,7 @@ uintptr_t ProcMem::Module(LPSTR moduleName)
 	MODULEENTRY32 mEntry; // declare module entry structure
 	mEntry.dwSize = sizeof(mEntry); // declare structure size and populate it with loaded modules
 
-	//Scan For Module By Name
+	//scan for module by name
 	do
 		if (!strcmp(mEntry.szModule, moduleName))
 		{

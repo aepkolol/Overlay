@@ -1,11 +1,9 @@
 #ifndef PROCMEM_H
 #define PROCMEM_H
 
-#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <iostream>
 #include <string>
-#include <sstream>
 #include <tlhelp32.h>
 
 class ProcMem {
@@ -16,9 +14,7 @@ public:
 	uintptr_t Proc_ID; // variable to store process id
 	HANDLE hProcess;
 	DWORD dwPID;
-	DWORD dwProtection;
-	DWORD dwCaveAddress;
-	BOOL bPOn, bIOn, bProt;
+	BOOL bPOn;
 
 public:
 	ProcMem();
@@ -78,13 +74,13 @@ public:
 				return B;
 			}
 			else {
-				throw 1; // throw error number / defined in catch
+				throw 1;
 			}
-		} // try end
+		}
 		catch (int error) {
-		} // catch end
+		}
 		return 0;
-	} // write end
+	}
 #pragma endregion
 };
 #endif

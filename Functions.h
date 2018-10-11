@@ -1,35 +1,27 @@
 #pragma once
-#include <thread>
-#include <conio.h>
 #include <vector>
-#include <locale>
-#include <codecvt>
-
+#include <dwrite.h>
+#include <d2d1.h>
 #include "ProcMem.h"
 #include "Vector.h"
-#include "hDirectX.h"
 #include "Offsets.h"
 #include "FindPattern.h"
 
-#pragma comment(lib,"winmm.lib")
+#pragma comment(lib, "d2d1")
+#pragma comment(lib, "dwrite")
 
-struct Color
-{
-	int r, g, b;
-};
+extern int width;
+extern int height;
 
 ULONG_PTR GNames;
 ProcMem mem;
 DWORD pid;
-uintptr_t BASE;
 bool FirstRun = true;
-uintptr_t WorldAddress;
-uintptr_t ObjectsAddress;
-uintptr_t NamesAddress;
+uintptr_t BASE, NamesAddress, WorldAddress, ObjectsAddress;
 char SoTGame[256] = "SoTGame.exe";
 
-Vector3 myLocation, myAngles, Cameralocation;
-float CameraFov;
+Vector3 myLocation, myAngles, CameraCachePOV;
+float DefaultFOV;
 
 void ReadData()
 {
@@ -42,21 +34,27 @@ void ReadData()
 		FirstRun = false;
 
 		auto address = IgroWidgets::FindPatternExternal(mem.hProcess, reinterpret_cast<HMODULE>(BASE),
+			reinterpret_cast<const unsigned char*>("\x48\x8B\x3D\x00\x00\x00\x00\x48\x85\xFF\x75\x00\xB9\x00\x00\x00\x00\xE8\x00\x00\x00\x00\x48\x8B\xF8\x48\x89\x44"),
+			"xxx????xxxx?x????x????xxxxxx");
+		if (address > 0)
+		{
+			NamesAddress = IgroWidgets::ReadRIPAddress(mem.hProcess, address, 3, 7);
+		}
+
+		address = IgroWidgets::FindPatternExternal(mem.hProcess, reinterpret_cast<HMODULE>(BASE),
 			reinterpret_cast<const unsigned char*>("\x48\x8B\x0D\x00\x00\x00\x00\x48\x8B\x01\xFF\x90\x00\x00\x00\x00\x48\x8B\xF8\x33\xD2\x48\x8D\x4E"),
 			"xxx????xxxxx????xxxxxxxx");
-
 		if (address > 0)
 		{
 			WorldAddress = IgroWidgets::ReadRIPAddress(mem.hProcess, address, 3, 7);
 		}
 
 		address = IgroWidgets::FindPatternExternal(mem.hProcess, reinterpret_cast<HMODULE>(BASE),
-			reinterpret_cast<const unsigned char*>("\x48\x8B\x3D\x00\x00\x00\x00\x48\x85\xFF\x75\x00\xB9\x00\x00\x00\x00\xE8\x00\x00\x00\x00\x48\x8B\xF8\x48\x89\x44"),
-			"xxx????xxxx?x????x????xxxxxx");
-
+			reinterpret_cast<const unsigned char*>("\x89\x1D\x00\x00\x00\x00\x48\x8B\xDF\x48\xC1\xE3\x04\x33\xD2"),
+			"xx????xxxxxxxxx");
 		if (address > 0)
 		{
-			NamesAddress = IgroWidgets::ReadRIPAddress(mem.hProcess, address, 3, 7);
+			ObjectsAddress = IgroWidgets::ReadRIPAddress(mem.hProcess, address, 2, 6);
 		}
 	}
 }
@@ -67,45 +65,19 @@ public:
 	char word[64];
 };
 
-class textx
-{
-public:
-	wchar_t word[64];
-};
-
-enum rareity
-{
-	Common,
-	Rare,
-	Legendary,
-	Mythical,
-	Fort,
-	Weeping,
-	Drunken
-};
-
 enum type
 {
-	chest,
-	skull,
-	artifact,
-	merchantcrate,
-	animalcrate,
-	gunpowder,
 	player,
-	skeleton,
 	ship,
-	chicken,
-	pig,
-	snake,
-	fort,
-	ghostship,
-	ghostcaptain,
-	volcano,
-	secretBox,
-	barrels,
-	shark,
-	mermaid
+	common,
+	rare,
+	legendary,
+	mythical,
+	cloud,
+	crate,
+	enemy,
+	limited,
+	other
 };
 
 struct AActors
@@ -113,16 +85,11 @@ struct AActors
 	int id;
 	std::string name, item;
 	Vector3 Location;
-	Vector3 TopLocation;
-	int type, rareity, namesize;
-	float health, maxhealth;
-	float yaw;
+	int type, namesize;
 	int distance;
 };
 
 std::vector<AActors> ActorArray;
-std::vector<AActors> WeildingArray;
-
 #define Assert( _exp ) ((void)0)
 
 struct vMatrix
@@ -189,32 +156,20 @@ bool WorldToScreen(Vector3 origin, Vector2 * out) {
 	vAxisY = Vector3(tempMatrix[1][0], tempMatrix[1][1], tempMatrix[1][2]);
 	vAxisZ = Vector3(tempMatrix[2][0], tempMatrix[2][1], tempMatrix[2][2]);
 
-	Vector3 vDelta = origin - Cameralocation;
+	Vector3 vDelta = origin - CameraCachePOV;
 	Vector3 vTransformed = Vector3(vDelta.Dot(vAxisY), vDelta.Dot(vAxisZ), vDelta.Dot(vAxisX));
 
 	if (vTransformed.z < 1.f)
 		vTransformed.z = 1.f;
 
-	float FovAngle = CameraFov;
-	float ScreenCenterX = Width / 2.0f;
-	float ScreenCenterY = Height / 2.0f;
+	float FovAngle = DefaultFOV;
+	float ScreenCenterX = width / 2.0f;
+	float ScreenCenterY = height / 2.0f;
 
 	out->x = ScreenCenterX + vTransformed.x * (ScreenCenterX / tanf(FovAngle * static_cast<float>(PI) / 360.f)) / vTransformed.z;
 	out->y = ScreenCenterY - vTransformed.y * (ScreenCenterX / tanf(FovAngle * static_cast<float>(PI) / 360.f)) / vTransformed.z;
 
 	return true;
-}
-
-Vector3 CalcAngle(Vector3 src, Vector3 dst)
-{
-	Vector3 angles;
-	Vector3 delta = src - dst;
-	angles.x = (asinf(delta.z / delta.Length()) * RADPI);
-	angles.y = (atanf(delta.y / delta.x) * RADPI);
-	angles.z = 0.0f;
-	if (delta.x >= 0.0) { angles.y += 180.0f; }
-
-	return angles;
 }
 
 Vector2 RotatePoint(Vector2 pointToRotate, Vector2 centerPoint, float angle, bool angleInRadians = false)
@@ -234,19 +189,6 @@ float getAngle(Vector2 initial, Vector2 final)
 	return atan2(initial.y - final.y, initial.x - final.x) * 180 / PI;
 }
 
-int GetTextWidth(const char *szText, ID3DXFont* pFont)
-{
-	RECT rcRect = { 0,0,0,0 };
-	if (pFont)
-	{
-		// calculate required rect
-		pFont->DrawText(nullptr, szText, (int)strlen(szText), &rcRect, DT_CALCRECT, D3DCOLOR_XRGB(0, 0, 0));
-	}
-
-	// return width
-	return rcRect.right - rcRect.left;
-}
-
 template< class T > struct TArray
 {
 public:
@@ -260,48 +202,7 @@ public:
 		Data = NULL;
 		Count = Max = 0;
 	};
-
-public:
-	int Num()
-	{
-		return this->Count;
-	};
-
-	T& operator() (int i)
-	{
-		return this->Data[i];
-	};
-
-	const T& operator() (int i) const
-	{
-		return this->Data[i];
-	};
-
-	void Add(T InputData)
-	{
-		Data = (T*)realloc(Data, sizeof(T) * (Count + 1));
-		Data[Count++] = InputData;
-		Max = Count;
-	};
-
-	void Clear()
-	{
-		free(Data);
-		Count = Max = 0;
-	};
 };
-
-std::string getNameFromID(int ID) {
-	try {
-		DWORD_PTR fNamePtr = mem.Read<DWORD_PTR>(GNames + int(ID / 0x4000) * 0x8);
-		DWORD_PTR fName = mem.Read<DWORD_PTR>(fNamePtr + 0x8 * int(ID % 0x4000));
-		return mem.Read<text>(fName + 0x10).word;
-	}
-	catch (...)
-	{
-		return std::string("");
-	}
-}
 
 std::string GetActorName(int ID)
 {
@@ -321,76 +222,3 @@ class AActor
 public:
 	char pad_0000[2120]; //0x0000
 }; //Size: 0x0848
-
-DWORD_PTR IslandDataAsset_PTR;
-
-struct FTreasureLocationData {
-	Vector3	WorldSpaceLocation;
-	Vector3	IslandSpaceLocation;
-	Vector2	MapSpaceLocation;
-};
-
-bool get_IslandDataEntries_list(DWORD_PTR IslandDataAsset_PTR, DWORD_PTR * list, __int32 * count) {
-	try {
-		*list = mem.Read<DWORD_PTR>(IslandDataAsset_PTR + Offsets::IslandDataEntries);
-		*count = mem.Read<__int32>(IslandDataAsset_PTR + Offsets::IslandDataEntriesCount);
-		return true;
-	}
-	catch (...) {
-		*list = 0;
-		*count = 0;
-		return false;
-	}
-}
-
-bool find_Island_In_IslandDataEntries(std::string MapTexturePath, DWORD_PTR * TreasureLocations_PTR, __int32 * TreasureLocations_Count) {
-	DWORD_PTR list = 0;
-	__int32 count = 0;
-	if (get_IslandDataEntries_list(IslandDataAsset_PTR, &list, &count)) {
-		for (auto nIndex = 0; nIndex <= count; nIndex++) {
-			try {
-				const auto cIsland = mem.Read<DWORD_PTR>(list + (nIndex * 0x8));
-				const auto IslandName_ID = mem.Read<__int32>(cIsland + Offsets::IslandName);
-				const std::string IslandName = getNameFromID(IslandName_ID);
-				if (MapTexturePath.find(IslandName) != std::string::npos) {
-					const auto FTreasureMapData_PTR = mem.Read<DWORD_PTR>(cIsland + Offsets::TreasureMaps); // FTreasureMapData
-					*TreasureLocations_PTR = mem.Read<DWORD_PTR>(FTreasureMapData_PTR + Offsets::TreasureLocations); // FTreasureLocationData
-					*TreasureLocations_Count = mem.Read<__int32>(FTreasureMapData_PTR + Offsets::TreasureLocationsCount); // FTreasureLocationData_Size
-					return true;
-				}
-			}
-			catch (...) { continue; }
-		}
-	}
-	return false;
-}
-
-std::vector<Vector3> XMarksTheSpot;
-
-bool get_TreasureMap(DWORD_PTR _PTR, std::string * MapTexturePath, std::vector<Vector2> * Marks) {
-	try {
-		DWORD_PTR Name_PTR = mem.Read<DWORD_PTR>(_PTR + Offsets::MapTexturePath);
-		DWORD_PTR Marks_PTR = mem.Read<DWORD_PTR>(_PTR + Offsets::Marks);
-		__int32 Marks_Cout = mem.Read<__int32>(_PTR + Offsets::MarksCount);
-
-		std::wstring test = mem.Read<textx>(Name_PTR).word;
-
-		using convert_type = std::codecvt_utf8<wchar_t>;
-		std::wstring_convert<convert_type, wchar_t> converter;
-		std::string converted_str = converter.to_bytes(test);
-
-		*MapTexturePath = converted_str;
-
-		for (int nIndex = 0; nIndex < Marks_Cout; nIndex++) {
-			Vector2 Position = mem.Read<Vector2>(Marks_PTR + (nIndex * (sizeof(Vector2) + sizeof(float))));
-			Marks->push_back(Position);
-		}
-
-		return true;
-	}
-	catch (...) {
-		*MapTexturePath = "";
-		Marks->clear();
-		return false;
-	}
-}
