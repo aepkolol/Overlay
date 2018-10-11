@@ -17,6 +17,34 @@ IDWriteFactory* pDWriteFactory;
 RECT hWindow;
 RECT tWindow;
 
+/*
+// TBA Objects Of Interest From SDK data mining /Aepko
+
+- Skeleton Lord
+- Banjo
+- Boarding Axe
+- Bread
+- Coconut
+- Concertina
+- Dice
+- Fiddle
+- FishingRod
+- FishMeat
+- HeavySword
+- Mango
+- Pet_Cat
+- Pet_Monkey
+- Pet_Parrot
+- Pet_Pig
+- Pineapple
+- Pipe
+- Pomegranate
+- RapierSword
+- ScrubBrush
+- SharkMeat
+*/
+
+
 int render()
 {
 	pRenderTarget->BeginDraw();
@@ -56,9 +84,9 @@ int render()
 			auto Actorrelativelocation = mem.Read<Vector3>(ActorRootComponent + Offsets::RelativeLocation);
 			std::string name = GetActorName(ActorID);
 
-			if (name.find("BP_") == std::string::npos)
+		/*	if (name.find("BP_") == std::string::npos)
 				continue;
-
+		 */
 			AActors info;
 
 			/*
@@ -94,10 +122,10 @@ int render()
 				ActorArray.push_back(info);
 			}
 			// Chests
-			else if (name.find("BP_TreasureChest_P") != std::string::npos || name.find("BP_TreasureChest") != std::string::npos && name.find("Proxy") || name.find("BP_ShipwreckTreasureChest_P") != std::string::npos || name.find("BP_ShipwreckTreasureChest") != std::string::npos && name.find("Proxy") || name.find("StrongholdKey") != std::string::npos)
+			else if (name.find("BP_TreasureChest_") != std::string::npos || name.find("BP_TreasureChest") != std::string::npos && name.find("Proxy") || name.find("StrongholdKey") != std::string::npos)
 			{
 				info.id = ActorID;
-				if (name.find("Common") != std::string::npos)
+				if (name.find("Common") != std::string::npos || name.find("Common-") != std::string::npos || name.find("Common+") != std::string::npos)
 				{
 					info.name = "Castaway Chest";
 					info.type = common;
@@ -106,7 +134,7 @@ int render()
 						info.name = "Ashen Castaway";
 					}
 				}
-				if (name.find("Rare") != std::string::npos)
+				if (name.find("Rare") != std::string::npos || name.find("Rare-") != std::string::npos || name.find("Rare+") != std::string::npos)
 				{
 					info.name = "Seafarer Chest";
 					info.type = rare;
@@ -115,7 +143,7 @@ int render()
 						info.name = "Ashen Seafarer";
 					}
 				}
-				if (name.find("Legendary") != std::string::npos)
+				if (name.find("Legendary") != std::string::npos || name.find("Legendary-") != std::string::npos || name.find("Legendary+") != std::string::npos)
 				{
 					info.name = "Marauder Chest";
 					info.type = legendary;
@@ -124,7 +152,7 @@ int render()
 						info.name = "Ashen Marauder";
 					}
 				}
-				if (name.find("Mythical") != std::string::npos)
+				if (name.find("Mythical") != std::string::npos || name.find("Mythical-") != std::string::npos || name.find("Mythical+") != std::string::npos)
 				{
 					info.name = "Captain Chest";
 					info.type = mythical;
@@ -133,12 +161,12 @@ int render()
 						info.name = "Ashen Captain";
 					}
 				}
-				if (name.find("Drunken") != std::string::npos)
+				if (name.find("Drunken") != std::string::npos || name.find("Drunken-") != std::string::npos || name.find("Drunken+") != std::string::npos)
 				{
 					info.name = "Chest of a Thousand Grogs";
 					info.type = mythical;
 				}
-				if (name.find("Weeping") != std::string::npos)
+				if (name.find("Weeping") != std::string::npos || name.find("Weeping-") != std::string::npos || name.find("Weeping+") != std::string::npos)
 				{
 					info.name = "Chest of Sorrow";
 					info.type = mythical;
@@ -161,6 +189,85 @@ int render()
 				{
 					info.name = "Stronghold Key";
 					info.type = mythical;
+				}
+				info.Location = Actorrelativelocation;
+				ActorArray.push_back(info);
+			}
+			// Shipwreck Chests
+			else if (name.find("BP_ShipwreckTreasureChest_") != std::string::npos || name.find("BP_ShipwreckTreasureChest_") != std::string::npos && name.find("Proxy_") || name.find("BP_BP_ShipwreckTreasureChest_Wieldable_") != std::string::npos)
+			{
+				info.id = ActorID;
+				if (name.find("Common") != std::string::npos)
+				{
+					info.name = "Sunken Castaway";
+					info.type = common;
+				}
+				if (name.find("Rare") != std::string::npos)
+				{
+					info.name = "Sunken Seafarer";
+					info.type = rare;
+				}
+				if (name.find("Legendary") != std::string::npos)
+				{
+					info.name = "Sunken Marauder";
+					info.type = legendary;
+				}
+				if (name.find("Mythical") != std::string::npos)
+				{
+					info.name = "Sunken Captain";
+					info.type = mythical;
+				}
+				if (name.find("Drunken") != std::string::npos)
+				{
+					info.name = "Thousand Grogs";
+					info.type = mythical;
+				}
+				if (name.find("Weeping") != std::string::npos)
+				{
+					info.name = "Chest of Sorrow";
+					info.type = mythical;
+				}
+				info.Location = Actorrelativelocation;
+				ActorArray.push_back(info);
+			}
+			// Test To Find Non-Showing Items
+			else if (name.find("ALK_WieldableObject") != std::string::npos)
+			{
+			info.id = ActorID;
+				if (name.find("ArtifactBox") != std::string::npos)
+				{
+					info.name = "!TEST! ArtifactBox";
+					info.type = common;
+				}
+				if (name.find("ArtifactGoblet") != std::string::npos)
+				{
+					info.name = "!TEST! ArtifactGoblet";
+					info.type = common;
+				}
+				if (name.find("ArtifactImpressive") != std::string::npos)
+				{
+					info.name = "!TEST! ArtifactImpressive";
+					info.type = common;
+				}
+				if (name.find("ArtifactVase") != std::string::npos)
+				{
+					info.name = "!TEST! ArtifactVase";
+					info.type = common;
+				}
+				if (name.find("GunpowderBarrel") != std::string::npos)
+				{
+					info.name = "!TEST! GunpowderBarrel";
+					info.type = common;
+				}
+				if (name.find("Skull") != std::string::npos)
+				{
+					info.name = "!TEST! Skull";
+					info.type = common;
+				}
+				if (name.find("TreasureChest") != std::string::npos)
+				{
+					info.name = "!TEST! TreasureChest";
+					info.type = common;
 				}
 				info.Location = Actorrelativelocation;
 				ActorArray.push_back(info);
@@ -213,7 +320,7 @@ int render()
 				info.Location = Actorrelativelocation;
 				ActorArray.push_back(info);
 			}
-			else if (name.find("BP_MerchantCrate") != std::string::npos && name.find("Proxy") != std::string::npos)
+			else if (name.find("BP_MerchantCrate_") != std::string::npos && name.find("Proxy") != std::string::npos)
 			{
 				info.id = ActorID;
 				if (name.find("PigCrate") != std::string::npos)
@@ -231,7 +338,7 @@ int render()
 					info.type = crate;
 					info.name = "Chicken Crate";
 				}
-				else if (name.find("Gunpowder") != std::string::npos)
+				else if (name.find("GunPowderBarrel") != std::string::npos)
 				{
 					info.type = other;
 					info.name = "Gun Powder Barrel";
@@ -239,37 +346,49 @@ int render()
 				else
 				{
 					info.type = crate;
-					if (name.find("TeaCrate") != std::string::npos)
+					if (name.find("Commodity_TeaCrate") != std::string::npos)
 					{
 						info.name = "Tea Crate";
 					}
-					else if (name.find("SugarCrate") != std::string::npos)
+					else if (name.find("Commodity_SugarCrate") != std::string::npos)
 					{
 						info.name = "Sugar Crate";
 					}
-					else if (name.find("SilkCrate") != std::string::npos)
+					else if (name.find("Commodity_SilkCrate") != std::string::npos)
 					{
 						info.name = "Silk Crate";
 					}
-					else if (name.find("SpiceCrate") != std::string::npos)
+					else if (name.find("Commodity_SpiceCrate") != std::string::npos)
 					{
 						info.name = "Spice Crate";
 					}
-					else if (name.find("Gemstones") != std::string::npos)
+					else if (name.find("Commodity_Gemstones") != std::string::npos)
 					{
 						info.name = "Gemstones";
 					}
-					else if (name.find("Minerals") != std::string::npos)
+					else if (name.find("Commodity_Minerals") != std::string::npos)
 					{
 						info.name = "Minerals";
 					}
-					else if (name.find("Ore") != std::string::npos)
+					else if (name.find("Commodity_Ore") != std::string::npos)
 					{
 						info.name = "Ore";
 					}
-					else if (name.find("VolcanicStone") != std::string::npos)
+					else if (name.find("Commodity_VolcanicStone") != std::string::npos)
 					{
 						info.name = "Volcanic Stone";
+					}
+					else if (name.find("WoodCrate") != std::string::npos)
+					{
+						info.name = "Wood Crate";
+					}
+					else if (name.find("CannonBallCrate") != std::string::npos)
+					{
+						info.name = "Cannon Ball Crate";
+					}
+					else if (name.find("BananaCrate") != std::string::npos)
+					{
+						info.name = "Banana Crate";
 					}
 					else
 					{
@@ -327,6 +446,40 @@ int render()
 				info.Location = Actorrelativelocation;
 				ActorArray.push_back(info);
 			}
+			// Merchant Cargo
+			else if (name.find("BP_CargoRunCrate_") != std::string::npos)
+			{
+			info.id = ActorID;
+			if (name.find("Cloth") != std::string::npos)
+			{
+				info.name = "Cloth Cargo";
+				info.type = crate;
+				if (name.find("DVR") != std::string::npos)
+				{
+					info.name = "Devils Cloth";
+				}
+			}
+			if (name.find("Plants") != std::string::npos)
+			{
+				info.name = "Plants Cargo";
+				info.type = crate;
+				if (name.find("DVR") != std::string::npos)
+				{
+					info.name = "Devils Plants";
+				}
+			}
+			if (name.find("Rum") != std::string::npos)
+			{
+				info.name = "Rum Cargo";
+				info.type = crate;
+				if (name.find("DVR") != std::string::npos)
+				{
+					info.name = "Devils Rum";
+				}
+			}
+			info.Location = Actorrelativelocation;
+			ActorArray.push_back(info);
+			}
 			// Box Of Secrets
 			else if (name.find("BP_AncientChest_P") != std::string::npos || name.find("BP_BoxOfSecrets") != std::string::npos || name.find("BP_AncientChest") != std::string::npos && name.find("Proxy") != std::string::npos)
 			{
@@ -361,17 +514,17 @@ int render()
 				if (name.find("MetalForm") != std::string::npos)
 				{
 					info.name = "Metal Skeleton";
-					info.type = legendary;
+					info.type = enemy;
 				}
 				else if (name.find("ShadowForm") != std::string::npos)
 				{
 					info.name = "Shadow Skeleton";
-					info.type = mythical;
+					info.type = enemy;
 				}
 				else if (name.find("PlantForm") != std::string::npos)
 				{
 					info.name = "Plant Skeleton";
-					info.type = rare;
+					info.type = enemy;
 				}
 				else
 				{
@@ -497,6 +650,15 @@ int render()
 				info.name = "Mysterious Journal";
 				info.Location = Actorrelativelocation;
 				ActorArray.push_back(info);
+			}
+			// Message In A Bottle
+			else if (name.find("BP_MessageInABottle_") != std::string::npos)
+			{
+			info.id = ActorID;
+			info.type = rare;
+			info.name = "Message Bottle";
+			info.Location = Actorrelativelocation;
+			ActorArray.push_back(info);
 			}
 			// Barrel Seagulls
 			else if (name.find("BP_Seagulls_Barrels") != std::string::npos)
