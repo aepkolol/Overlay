@@ -68,8 +68,10 @@ int render()
 		auto ActorCount = mem.Read<int>(ULevel + Offsets::ActorsTArrayCount);
 		auto LocalPlayer = mem.Read<ULONG_PTR>(PlayerController + Offsets::Pawn);
 		auto LocalPlayeState = mem.Read<ULONG_PTR>(PlayerController + Offsets::PlayerState);
+		auto HealthComponet = mem.Read<ULONG_PTR>(LocalPlayer + Offsets::HealthComponent);
 		auto CameraManager = mem.Read<ULONG_PTR>(PlayerController + Offsets::PlayerCameraManager);
 		auto RootComponent = mem.Read<ULONG_PTR>(LocalPlayer + Offsets::RootComponent);
+		std::vector<Vector3> new_XMarksTheSpot;
 
 		for (int i = 0; i < ActorCount; i++)
 		{
@@ -86,7 +88,7 @@ int render()
 
 		/*	if (name.find("BP_") == std::string::npos)
 				continue;
-		 */
+		*/
 			AActors info;
 
 			/*
@@ -273,10 +275,10 @@ int render()
 				ActorArray.push_back(info);
 			}
 			// Skulls
-			else if (name.find("BP_BountyRewardSkull_P") != std::string::npos || name.find("BP_BountyRewardSkull") != std::string::npos && name.find("Proxy") != std::string::npos)
+			else if (name.find("BP_BountyRewardSkull_Proxy_") != std::string::npos || name.find("BP_BountyRewardSkull_") != std::string::npos)
 			{
 				info.id = ActorID;
-				if (name.find("Common") != std::string::npos)
+				if (name.find("Common") != std::string::npos || name.find("Common-") != std::string::npos || name.find("Common+") != std::string::npos)
 				{
 					info.name = "Foul Skull";
 					info.type = common;
@@ -285,7 +287,7 @@ int render()
 						info.name = "Ashen Foul";
 					}
 				}
-				if (name.find("Rare") != std::string::npos)
+				if (name.find("Rare") != std::string::npos || name.find("Rare-") != std::string::npos || name.find("Rare+") != std::string::npos)
 				{
 					info.name = "Disgraced Skull";
 					info.type = rare;
@@ -294,7 +296,7 @@ int render()
 						info.name = "Ashen Disgraced";
 					}
 				}
-				if (name.find("Legendary") != std::string::npos)
+				if (name.find("Legendary") != std::string::npos || name.find("Legendary-") != std::string::npos || name.find("Legendary+") != std::string::npos)
 				{
 					info.name = "Hateful Skull";
 					info.type = legendary;
@@ -303,7 +305,7 @@ int render()
 						info.name = "Ashen Hateful";
 					}
 				}
-				if (name.find("Mythical") != std::string::npos)
+				if (name.find("Mythical") != std::string::npos || name.find("Mythical-") != std::string::npos || name.find("Mythical+") != std::string::npos)
 				{
 					info.name = "Villainous Skull";
 					info.type = mythical;
@@ -320,10 +322,10 @@ int render()
 				info.Location = Actorrelativelocation;
 				ActorArray.push_back(info);
 			}
-			else if (name.find("BP_MerchantCrate_") != std::string::npos && name.find("Proxy") != std::string::npos)
+			else if (name.find("BP_MerchantCrate_") != std::string::npos)
 			{
 				info.id = ActorID;
-				if (name.find("PigCrate") != std::string::npos)
+				if (name.find("PigCrate") != std::string::npos || name.find("PigCrateProxy") != std::string::npos)
 				{
 					info.type = crate;
 					info.name = "Pig Crate";
@@ -362,31 +364,31 @@ int render()
 					{
 						info.name = "Spice Crate";
 					}
-					else if (name.find("Commodity_Gemstones") != std::string::npos)
+					else if (name.find("Commodity_Gemstones") != std::string::npos || name.find("Commodity_Gemstones_Proxy") != std::string::npos)
 					{
 						info.name = "Gemstones";
 					}
-					else if (name.find("Commodity_Minerals") != std::string::npos)
+					else if (name.find("Commodity_Minerals") != std::string::npos || name.find("Commodity_Minerals_Proxy") != std::string::npos)
 					{
 						info.name = "Minerals";
 					}
-					else if (name.find("Commodity_Ore") != std::string::npos)
+					else if (name.find("Commodity_Ore") != std::string::npos || name.find("Commodity_Ore_Proxy") != std::string::npos)
 					{
 						info.name = "Ore";
 					}
-					else if (name.find("Commodity_VolcanicStone") != std::string::npos)
+					else if (name.find("Commodity_VolcanicStone") != std::string::npos || name.find("Commodity_VolcanicStone_Proxy") != std::string::npos)
 					{
 						info.name = "Volcanic Stone";
 					}
-					else if (name.find("WoodCrate") != std::string::npos)
+					else if (name.find("WoodCrate") != std::string::npos || name.find("WoodCrateProxy") != std::string::npos)
 					{
 						info.name = "Wood Crate";
 					}
-					else if (name.find("CannonBallCrate") != std::string::npos)
+					else if (name.find("CannonBallCrate") != std::string::npos || name.find("CannonBallCrateProxy") != std::string::npos)
 					{
 						info.name = "Cannon Ball Crate";
 					}
-					else if (name.find("BananaCrate") != std::string::npos)
+					else if (name.find("BananaCrate") != std::string::npos || name.find("BananaCrateProxy") != std::string::npos)
 					{
 						info.name = "Banana Crate";
 					}
@@ -481,7 +483,7 @@ int render()
 			ActorArray.push_back(info);
 			}
 			// Box Of Secrets
-			else if (name.find("BP_AncientChest_P") != std::string::npos || name.find("BP_BoxOfSecrets") != std::string::npos || name.find("BP_AncientChest") != std::string::npos && name.find("Proxy") != std::string::npos)
+			else if (name.find("BP_AncientChest_") != std::string::npos || name.find("BP_BoxOfSecrets") != std::string::npos || name.find("BP_AncientChest_") != std::string::npos && name.find("Proxy") != std::string::npos)
 			{
 				info.id = ActorID;
 				info.type = mythical;
@@ -507,32 +509,38 @@ int render()
 				info.Location = Actorrelativelocation;
 				ActorArray.push_back(info);
 			}
-			// Skeleton
-			else if (name.find("Skeleton") != std::string::npos)
+			// Skeletons
+			else if (name.find("BP_MetalAIFormComponent") != std::string::npos)
 			{
 				info.id = ActorID;
-				if (name.find("MetalForm") != std::string::npos)
-				{
-					info.name = "Metal Skeleton";
-					info.type = enemy;
-				}
-				else if (name.find("ShadowForm") != std::string::npos)
-				{
-					info.name = "Shadow Skeleton";
-					info.type = enemy;
-				}
-				else if (name.find("PlantForm") != std::string::npos)
-				{
-					info.name = "Plant Skeleton";
-					info.type = enemy;
-				}
-				else
-				{
-					info.name = "Skeleton";
-					info.type = enemy;
-				}
+				info.name = "Metal Skeleton";
+				info.type = enemy;
 				info.Location = Actorrelativelocation;
 				ActorArray.push_back(info);
+			}
+			else if (name.find("BP_PlantAIFormComponent") != std::string::npos)
+			{
+				info.id = ActorID;
+				info.name = "Plant Skeleton";
+				info.type = enemy;
+				info.Location = Actorrelativelocation;
+				ActorArray.push_back(info);
+			}
+			else if (name.find("BP_ShadowAIFormComponent") != std::string::npos)
+			{
+				info.id = ActorID;
+				info.name = "Shadow Skeleton";
+				info.type = enemy;
+				info.Location = Actorrelativelocation;
+				ActorArray.push_back(info);
+			}
+			else if (name.find("BP_BoneForm") != std::string::npos)
+			{
+			info.id = ActorID;
+			info.name = "Skeleton";
+			info.type = enemy;
+			info.Location = Actorrelativelocation;
+			ActorArray.push_back(info);
 			}
 			// Skeleton Fort Cloud
 			else if (name.find("BP_SkellyFort") != std::string::npos)
@@ -705,12 +713,76 @@ int render()
 				info.Location = Actorrelativelocation;
 				ActorArray.push_back(info);
 			}
-		}
+			// X Marks The Spot
+			else if (name.find("IslandService") != std::string::npos)
+				{
+				IslandDataAsset_PTR = mem.Read<ULONG_PTR>(Actor + Offsets::IslandDataAsset);
+				}
+
+				if (IslandDataAsset_PTR != NULL)
+				{
+					if (name == "BP_TreasureMap_C")
+					{
+						std::string MapTexturePath;
+						std::vector<Vector2> Marks;
+						if (get_TreasureMap(Actor, &MapTexturePath, &Marks))
+						{
+							DWORD_PTR TreasureLocations_PTR = NULL;
+							__int32 TreasureLocations_Count = 0;
+
+							if (find_Island_In_IslandDataEntries(
+								MapTexturePath, &TreasureLocations_PTR, &TreasureLocations_Count))
+							{
+								for (auto const& value : Marks)
+								{
+									for (int nIndex = 0; nIndex < TreasureLocations_Count; nIndex++)
+									{
+										const FTreasureLocationData cTreasureLocation
+											= mem.Read<FTreasureLocationData>(TreasureLocations_PTR
+												+ (nIndex * sizeof(FTreasureLocationData)));
+										if (cTreasureLocation.MapSpaceLocation.x == value.x
+											&& cTreasureLocation.MapSpaceLocation.y == value.y)
+										{
+											new_XMarksTheSpot.push_back(
+												cTreasureLocation.WorldSpaceLocation);
+											break;
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+				/*else if (name.find("GameState") != std::string::npos)
+			{
+				info.id = ActorID;
+				info.name = name;//"AIslandService";
+
+
+				//IslandDataAsset_PTR = mem.Read<ULONG_PTR>(Actor + 0x4d0);
+
+				ActorArray.push_back(info);
+			}*/
+
+			}
+
+			XMarksTheSpot = new_XMarksTheSpot;
 
 		myLocation = mem.Read<Vector3>(RootComponent + Offsets::RelativeLocation);
 		myAngles = mem.Read<Vector3>(CameraManager + Offsets::CameraRotation);
 		CameraCachePOV = mem.Read<Vector3>(CameraManager + Offsets::CameraCachePOV);
 		DefaultFOV = mem.Read<float>(CameraManager + Offsets::DefaultFOV);
+		auto myhealth = mem.Read<float>(HealthComponet + Offsets::CurrentHealth);
+		auto maxhealth = mem.Read<float>(HealthComponet + Offsets::MaxHealth);
+
+		for (int i = 0; i < XMarksTheSpot.size(); i++)
+		{
+			Vector2 ScreenPoint;
+			int distance = Vector2(myLocation.x, myLocation.y).DistTo(Vector2(ActorArray.at(i).Location.x, ActorArray.at(i).Location.y)) / 100;
+			if (WorldToScreen(XMarksTheSpot.at(i), &ScreenPoint))
+				pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Red, 1.0f), &pBrush);
+		}
+		// End X Marks The Spot
 
 		for (int i = 0; i < ActorArray.size(); i++)
 		{

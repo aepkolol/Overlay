@@ -17,6 +17,8 @@ public:
 	// :FCameraCacheEntry:POV:SoT_Engine_structs.hpp
 	static constexpr int CameraCachePOV = CameraCache + 0x0010;
 	static constexpr int CameraRotation = CameraCachePOV + 0x0C;
+	static constexpr int CameraLocation = CameraCachePOV + 0x0;
+	static constexpr int CameraFOV = CameraCachePOV + 0x18;
 
 	// :UIslandDataAsset:IslandDataEntries:SoT_Athena_classes.hpp
 	static constexpr int IslandDataEntries = 0x0040;

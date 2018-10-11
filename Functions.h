@@ -6,6 +6,7 @@
 #include "Vector.h"
 #include "Offsets.h"
 #include "FindPattern.h"
+#include <codecvt>
 
 #pragma comment(lib, "d2d1")
 #pragma comment(lib, "dwrite")
@@ -63,6 +64,12 @@ class text
 {
 public:
 	char word[64];
+};
+
+class textx
+{
+public:
+	wchar_t word[64];
 };
 
 enum type
@@ -214,6 +221,86 @@ std::string GetActorName(int ID)
 	catch (...)
 	{
 		return std::string("");
+	}
+}
+
+DWORD_PTR IslandDataAsset_PTR;
+
+struct FTreasureLocationData 
+{
+	Vector3	WorldSpaceLocation;
+	Vector3	IslandSpaceLocation;
+	Vector2	MapSpaceLocation;
+};
+
+bool get_IslandDataEntries_list(DWORD_PTR IslandDataAsset_PTR, DWORD_PTR * list, __int32 * count) {
+	try {
+		*list = mem.Read<DWORD_PTR>(IslandDataAsset_PTR + Offsets::IslandDataEntries);
+		*count = mem.Read<__int32>(IslandDataAsset_PTR + Offsets::IslandDataEntriesCount);
+		return true;
+	}
+	catch (int e) {
+		*list = NULL;
+		*count = 0;
+		return false;
+	}
+}
+
+bool find_Island_In_IslandDataEntries(std::string MapTexturePath, DWORD_PTR * TreasureLocations_PTR, __int32 * TreasureLocations_Count) {
+	DWORD_PTR list = NULL;
+	__int32 count = 0;
+	if (get_IslandDataEntries_list(IslandDataAsset_PTR, &list, &count)) {
+		for (auto nIndex = 0; nIndex <= count; nIndex++) {
+			try {
+				const auto cIsland = mem.Read<DWORD_PTR>(list + (nIndex * 0x8));
+				const auto IslandName_ID = mem.Read<__int32>(cIsland + Offsets::IslandName);
+				const std::string IslandName = GetActorName(IslandName_ID);
+				if (MapTexturePath.find(IslandName) != std::string::npos) {
+					const auto FTreasureMapData_PTR = mem.Read<DWORD_PTR>(cIsland + Offsets::TreasureMaps);					// FTreasureMapData
+					*TreasureLocations_PTR = mem.Read<DWORD_PTR>(FTreasureMapData_PTR + Offsets::TreasureLocations);		// FTreasureLocationData
+					*TreasureLocations_Count = mem.Read<__int32>(FTreasureMapData_PTR + Offsets::TreasureLocationsCount);	// FTreasureLocationData_Size
+					return true;
+				}
+			}
+			catch (...) { continue; }
+		}
+		return false;
+
+	}
+	else {
+		return false;
+	}
+}
+
+std::vector<Vector3> XMarksTheSpot;
+
+bool get_TreasureMap(DWORD_PTR _PTR, std::string * MapTexturePath, std::vector<Vector2> * Marks) {
+	try {
+		DWORD_PTR Name_PTR = mem.Read<DWORD_PTR>(_PTR + Offsets::MapTexturePath);
+		DWORD_PTR Marks_PTR = mem.Read<DWORD_PTR>(_PTR + Offsets::Marks);
+		__int32 Marks_Cout = mem.Read<__int32>(_PTR + Offsets::MarksCount);
+
+		std::wstring test = mem.Read<textx>(Name_PTR).word;
+
+		using convert_type = std::codecvt_utf8<wchar_t>;
+		std::wstring_convert<convert_type, wchar_t> converter;
+
+		//use converter (.to_bytes: wstr->str, .from_bytes: str->wstr)
+		std::string converted_str = converter.to_bytes(test);
+
+		*MapTexturePath = converted_str;
+
+		for (int nIndex = 0; nIndex < Marks_Cout; nIndex++) {
+			Vector2 Position = mem.Read<Vector2>(Marks_PTR + (nIndex * (sizeof(Vector2) + sizeof(float))));
+			Marks->push_back(Position);
+		}
+
+		return true;
+	}
+	catch (int e) {
+		*MapTexturePath = "";
+		Marks->clear();
+		return false;
 	}
 }
 
